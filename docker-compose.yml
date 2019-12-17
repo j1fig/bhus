@@ -1,0 +1,47 @@
+version: '3.7'
+services:
+
+#   bhus:
+#     build: bhus
+#     image: bhus
+#     ports:
+#       - "8000:8000"
+#     depends_on:
+#       - initdb
+#     environment:
+#       PYTHONUNBUFFERED: 1
+#     stop_signal: SIGKILL
+
+  initdb:
+    build: initdb
+    image: initdb
+    volumes:
+      - dataset:/dataset
+    depends_on:
+      - postgres
+    environment:
+      PYTHONUNBUFFERED: 1
+    environment:
+      DBNAME: "${DBNAME}"
+      DBPASSWORD: "${DBPASSWORD}"
+      DBUSER: "${DBUSER}"
+      DBHOST: "${DBHOST}"
+      DBPORT: "${DBPORT}"
+    stop_signal: SIGKILL
+    tty: true
+
+  postgres:
+    restart: always
+    image: postgres:10.7
+    volumes:
+      - database:/var/lib/postgresql/data
+    ports:
+      - "${DBPORT}:${DBPORT}"
+    environment:
+      POSTGRES_DB: "${DBNAME}"
+      POSTGRES_PASSWORD: "${DBPASSWORD}"
+      POSTGRES_USER: "${DBUSER}"
+
+volumes:
+  database:
+  dataset:

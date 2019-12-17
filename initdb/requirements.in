@@ -1,0 +1,4 @@
+SQLAlchemy
+alembic
+requests
+psycopg2-binary

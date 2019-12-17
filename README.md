@@ -1,7 +1,8 @@
-tldx
+bhus
 ====
 
-Monorepo containing all code and configuration for the tldx.io interview task.
+Irish for bus.
+API to interact with Dublin's operators, vehicles and stops.
 
 
 ## Roadmap
