@@ -3,6 +3,7 @@ import os
 
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
+from sqlalchemy.orm import Session
 
 from models import Base
 from utils import eprint
@@ -31,7 +32,11 @@ def _get_engine():
     return _engine
 
 
-def create_all(retries=3, retry_period=1.0):
+def make_session():
+    return Session(bind=_get_engine())
+
+
+def create_all(retries=10, retry_period=2.0):
     engine = _get_engine()
 
     while retries > 0:

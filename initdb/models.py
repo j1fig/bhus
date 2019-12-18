@@ -19,4 +19,5 @@ class VehicleState(Base):
     longitude = Column(Float)
     latitude = Column(Float)
     vehicle_id = Column(Integer, index=True)
-    latitude = Column(Boolean, index=True)
+    at_stop = Column(Boolean, index=True)
+    source = Column(String, index=True)  #  for initialization tracking purposes.

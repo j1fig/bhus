@@ -2,11 +2,14 @@
 from utils import eprint
 import db
 import dataset
+import load
 
 
 if __name__ == '__main__':
+    eprint('ensuring dataset is downloaded...')
+    dataset.ensure()
     eprint('maybe create tables...')
     db.create_all()
-    eprint('ensuring dataset is present...')
-    dataset.ensure()
+    eprint('maybe load the dataset...')
+    load.one()
     eprint('done!')

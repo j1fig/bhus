@@ -30,7 +30,6 @@ def _decompress_dataset(filepath, dest_dir):
 
 def ensure():
     dataset_present = bool(os.listdir(DATASET_DIR))
-    print(os.listdir(DATASET_DIR))
 
     if dataset_present:
         return
