@@ -1,2 +1,2 @@
 #!/bin/bash
-.venv/bin/python -m pytest -q api/tests/
+.venv/bin/python -m pytest -q tests/

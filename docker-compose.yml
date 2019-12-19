@@ -35,6 +35,7 @@ services:
     tty: true
 
   postgres:
+    build: postgres
     restart: always
     image: postgres:10.7
     volumes:

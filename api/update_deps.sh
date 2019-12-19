@@ -7,5 +7,5 @@ VENV_BIN=$PWD/.dep_venv/bin
 $VENV_BIN/pip install --upgrade pip pip-tools
 
 $VENV_BIN/pip-compile requirements.in
-$TEST_VENV_BIN/pip-compile requirements-test.in
+$VENV_BIN/pip-compile requirements-test.in
 rm -rf .dep_venv
