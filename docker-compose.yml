@@ -1,16 +1,21 @@
 version: '3.7'
 services:
 
-#   bhus:
-#     build: bhus
-#     image: bhus
-#     ports:
-#       - "8000:8000"
-#     depends_on:
-#       - initdb
-#     environment:
-#       PYTHONUNBUFFERED: 1
-#     stop_signal: SIGKILL
+  api:
+    build: api
+    image: bhus
+    ports:
+      - "8000:8000"
+    depends_on:
+      - initdb
+    environment:
+      PYTHONUNBUFFERED: 1
+      DBNAME: "${DBNAME}"
+      DBPASSWORD: "${DBPASSWORD}"
+      DBUSER: "${DBUSER}"
+      DBHOST: "${DBHOST}"
+      DBPORT: "${DBPORT}"
+    stop_signal: SIGKILL
 
   initdb:
     build: initdb
@@ -21,7 +26,6 @@ services:
       - postgres
     environment:
       PYTHONUNBUFFERED: 1
-    environment:
       DBNAME: "${DBNAME}"
       DBPASSWORD: "${DBPASSWORD}"
       DBUSER: "${DBUSER}"
