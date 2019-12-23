@@ -16,7 +16,6 @@ def as_dict():
     _module = sys.modules[__name__]
     module_attrs = {}
     for k in _ALL:
-        print(k)
         module_attrs[k] = getattr(_module, k)
     return _constant_public_attrs_to_dict(module_attrs)
 

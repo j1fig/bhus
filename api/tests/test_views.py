@@ -1,3 +1,9 @@
+from unittest.mock import ANY
+
+from aiohttp.test_utils import make_mocked_coro
+import pytest
+
+
 async def test_healthz(app_client):
     resp = await app_client.get('/healthz')
     assert resp.status == 200
@@ -10,9 +16,16 @@ async def test_index(app_client):
     assert resp.status == 200
 
 
-async def test_operators(app_client):
+async def test_operators(app_client, m_operators_by_time_range):
     resp = await app_client.get('/api/operator')
     assert resp.status == 200
+    data = await resp.json()
+    assert all(isinstance(o['operator'], str) for o in data)
+
+
+async def test_operators_filtering_from_to(app_client, m_operators_by_time_range):
+    resp = await app_client.get('/api/operator?from=100&to=150')
+    m_operators_by_time_range.assert_called_once_with(pool=ANY, from_=100, to=150)
 
 
 async def test_operator_vehicles(app_client):

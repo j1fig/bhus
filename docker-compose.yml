@@ -10,11 +10,7 @@ services:
       - initdb
     environment:
       PYTHONUNBUFFERED: 1
-      DBNAME: "${DBNAME}"
-      DBPASSWORD: "${DBPASSWORD}"
-      DBUSER: "${DBUSER}"
-      DBHOST: "${DBHOST}"
-      DBPORT: "${DBPORT}"
+      DB_DSN: "${DB_DSN}"
     stop_signal: SIGKILL
 
   initdb:
