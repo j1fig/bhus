@@ -10,10 +10,14 @@ from bhus.spec import Operator, Vehicle
 
 
 class FakePool:
+
+    def __init__(self, *args, **kwargs):
+        self.conn = FakeConnection()
+
     @asynccontextmanager
     async def acquire(self):
         try:
-            yield FakeConnection()
+            yield self.conn
         finally:
             pass
 
@@ -22,16 +26,20 @@ class FakePool:
 
 
 class FakeConnection:
+    def __init__(self, *args, **kwargs):
+        self.fetch_calls = []
+
     async def execute(self, statement: str, *args):
         """
 	Echoes the statement sent to the conn.execute() method.
 	"""
         return make_mocked_coro(statement)
 
-    async def fetch(self, statement: str, *args):
+    async def fetch(self, statement: str, *args, **kwargs):
         """
 	Echoes the statement sent to the conn.fetch() method.
 	"""
+        self.fetch_calls.append({'statement': statement, '*args': args})
         return [{'id': v} for v in range(10)]
 
 
