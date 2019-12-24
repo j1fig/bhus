@@ -68,7 +68,7 @@ def operators():
 
 @pytest.fixture
 async def m_operators_by_time_range(monkeypatch, operators):
-    from bhus import models
+    from bhus import domain
     m_operators_by_time_range = make_mocked_coro(operators)
-    monkeypatch.setattr(models, 'get_operators_by_time_range', m_operators_by_time_range)
+    monkeypatch.setattr(domain, 'get_operators_by_time_range', m_operators_by_time_range)
     return m_operators_by_time_range

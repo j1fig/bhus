@@ -1,6 +1,6 @@
 from aiohttp import web
 
-from bhus import models
+from bhus import domain
 
 routes = web.RouteTableDef()
 
@@ -18,11 +18,11 @@ async def healthz(request):
 
 @routes.get('/api/operator')
 async def operators(request):
-    # TODO make this proper.
+    # TODO make this a proper validator.
     q = request.query
     from_ = int(q['from']) if 'from' in q else None
     to = int(q['to']) if 'to' in q else None
-    operators = await models.get_operators_by_time_range(
+    operators = await domain.get_operators_by_time_range(
         pool=request.app['pool'],
         from_=from_,
         to=to,
