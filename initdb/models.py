@@ -15,7 +15,7 @@ class VehicleState(Base):
     id = Column(BigInteger, primary_key=True)
 
     timestamp = Column(BigInteger, index=True)  # in microseconds, e.g. 1352160000000000.
-    operator = Column(String, index=True)
+    operator_id = Column(String, index=True)
     longitude = Column(Float)
     latitude = Column(Float)
     vehicle_id = Column(Integer, index=True)

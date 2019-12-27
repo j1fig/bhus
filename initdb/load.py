@@ -57,6 +57,8 @@ def from_csv(filepath):
                     if index in CSV_INDEX
                 }
                 vehicle_state['at_stop'] = _coerce_at_stop(vehicle_state['at_stop'])
+                vehicle_state['operator_id'] = vehicle_state['operator']
+                del vehicle_state['operator']
                 vehicle_state['source'] = filepath
                 states.append(vehicle_state)
             session.bulk_insert_mappings(VehicleState, states)
