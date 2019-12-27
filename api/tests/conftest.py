@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
-from random import choice
+from random import choice, random, randint
+from time import time
 import string
 
 from aiohttp.test_utils import make_mocked_coro
@@ -7,6 +8,9 @@ import asyncpg
 import pytest
 
 from bhus.spec import Operator, Vehicle
+
+
+_TIME = time()
 
 
 class FakePool:
@@ -39,7 +43,51 @@ class FakeConnection:
 	Echoes the statement sent to the conn.fetch() method.
 	"""
         self.fetch_calls.append({"statement": statement, "*args": args})
-        return [{"id": v} for v in range(10)]
+        return [
+            FakeRecord(field_values={
+                "id": v,
+                "timestamp": _gen_timestamp(),
+                "operator_id": _gen_operator_id(),
+                "vehicle_id": _gen_vehicle_id(),
+                "latitude": _gen_latitude(),
+                "longitude": _gen_longitude(),
+                "at_stop": _gen_at_stop(),
+            })
+            for v in range(10)
+        ]
+
+
+class FakeRecord:
+
+    def __init__(self, field_values):
+        self._field_values = field_values
+
+    def __getitem__(self, key):
+        return self._field_values[key]
+
+
+def _gen_timestamp():
+    return int(random()*time())
+
+
+def _gen_operator_id():
+    return "".join(choice(string.ascii_uppercase) for _ in range(2))
+
+
+def _gen_vehicle_id():
+    return int(random()*100000)
+
+
+def _gen_latitude():
+    return randint(-90000, 90000) / 1000
+
+
+def _gen_longitude():
+    return randint(-180000, 180000) / 1000
+
+
+def _gen_at_stop():
+    return choice([True, False])
 
 
 @pytest.fixture
@@ -61,8 +109,7 @@ async def m_pg(monkeypatch):
 def operators():
     operators = []
     for _ in range(10):
-        id_ = "".join(choice(string.ascii_uppercase) for _ in range(2))
-        operators.append({"operator": id_})
+        operators.append(Operator(id=_gen_operator_id()))
     return operators
 
 
@@ -72,6 +119,6 @@ async def m_operators_by_time_range(monkeypatch, operators):
 
     m_operators_by_time_range = make_mocked_coro(operators)
     monkeypatch.setattr(
-        domain, "get_operators_by_time_range", m_operators_by_time_range
+        domain, "get_unique_operators_by_time_range", m_operators_by_time_range
     )
     return m_operators_by_time_range

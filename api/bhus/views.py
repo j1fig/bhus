@@ -23,7 +23,7 @@ async def operators(request: web.Request) -> web.Response:
 
     This returns a plain list of JSON dictionaries with an `id` field and value.
     """
-    from_, to = querystring.get_time_range_from_query(request.query)
+    from_, to = querystring.get_time_range_from_request(request)
     operators = await domain.get_unique_operators_by_time_range(
         pool=request.app["pool"], from_=from_, to=to,
     )

@@ -7,7 +7,8 @@ from typing import List, Optional
 # to a common interface.
 from asyncpg.pool import Pool
 
-from bhus.spec import Vehicle, Operator
+from bhus.models import pg
+from bhus.spec import Vehicle, Operator, VehicleState
 
 
 async def get_unique_operators_by_time_range(

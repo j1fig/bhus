@@ -13,9 +13,9 @@ import pytest
         ),
     ],
 )
-async def test_get_operators_by_time_range(kwargs, statement, app_client, mocker):
+async def test_select_distinct_operators_by_time_range(kwargs, statement, app_client, mocker):
     pool = app_client.app["pool"]
-    await pg.get_operators_by_time_range(pool=pool, **kwargs)
+    await pg.select_distinct_operators_by_time_range(pool=pool, **kwargs)
     assert app_client.app["pool"].conn.fetch_calls == [
         {"statement": statement, "*args": (kwargs["from_"], kwargs["to"]),}
     ]
