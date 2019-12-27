@@ -7,7 +7,7 @@ from aiohttp.test_utils import make_mocked_coro
 import asyncpg
 import pytest
 
-from bhus.spec import Operator, Vehicle
+from bhus.spec import Operator, Vehicle, VehicleState
 
 
 _TIME = time()
@@ -67,7 +67,7 @@ class FakeRecord:
 
 
 def _gen_timestamp():
-    return int(random()*time())
+    return int(random()*_TIME)
 
 
 def _gen_operator_id():
@@ -111,6 +111,29 @@ def operators():
     for _ in range(10):
         operators.append(Operator(id=_gen_operator_id()))
     return operators
+
+
+@pytest.fixture
+def vehicles():
+    vehicles = []
+    for _ in range(10):
+        vehicles.append(Vehicle(id=_gen_operator_id()))
+    return vehicles 
+
+
+@pytest.fixture
+def vehicle_states():
+    states = []
+    for _ in range(10):
+        states.append(
+            VehicleState(
+                timestamp=_gen_timestamp(),
+                latitude=_gen_latitude(),
+                longitude=_gen_longitude(),
+                at_stop=_gen_at_stop(),
+            )
+        )
+    return states 
 
 
 @pytest.fixture

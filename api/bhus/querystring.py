@@ -12,7 +12,7 @@ def get_time_range_from_request(request: web.Request) -> (int, int):
     try:
         from_ = int(q["from"])
         to = int(q["to"])
-    except TypeError:
+    except ValueError:
         raise web.HTTPBadRequest
 
     validate_time_range(from_, to)
@@ -42,6 +42,6 @@ def validate_time_range(from_: int, to: int) -> None:
 
 
 def validate_timestamp(ts: int) -> None:
-    valid = ts > 0
+    valid = ts >= 0
     if not valid:
         raise web.HTTPBadRequest
