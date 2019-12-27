@@ -156,7 +156,7 @@ async def m_operators_by_time_range(monkeypatch, operators):
 
 
 @pytest.fixture
-async def m_select_distinct_vehicles_by_operator_and_time_range(monkeypatch, operators):
+async def m_select_distinct_vehicles_by_operator_and_time_range(monkeypatch, records):
     from bhus.models import pg
 
     m_records = make_mocked_coro(records)
@@ -167,7 +167,7 @@ async def m_select_distinct_vehicles_by_operator_and_time_range(monkeypatch, ope
 
 
 @pytest.fixture
-async def m_select_distinct_vehicles_by_operator_at_stop_and_time_range(monkeypatch, operators):
+async def m_select_distinct_vehicles_by_operator_at_stop_and_time_range(monkeypatch, records):
     from bhus.models import pg
 
     m_records = make_mocked_coro(records)

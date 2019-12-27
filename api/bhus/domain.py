@@ -21,13 +21,11 @@ async def get_unique_operators_by_time_range(
 async def get_unique_vehicles_by_operator_and_time_range(
     pool: Pool, operator_id: str, from_: int, to: int, at_stop: Optional[bool] = None
 ) -> List[Vehicle]:
-    print('passed 0')
     if at_stop is not None:
         records = await pg.select_distinct_vehicles_by_operator_at_stop_and_time_range(
             pool=pool, operator_id=operator_id, from_=from_, to=to, at_stop=at_stop
         )
     else:
-        print('passed')
         records = await pg.select_distinct_vehicles_by_operator_and_time_range(
             pool=pool, operator_id=operator_id, from_=from_, to=to
         )
