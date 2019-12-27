@@ -10,7 +10,6 @@ from bhus.spec import Operator, Vehicle
 
 
 class FakePool:
-
     def __init__(self, *args, **kwargs):
         self.conn = FakeConnection()
 
@@ -39,13 +38,14 @@ class FakeConnection:
         """
 	Echoes the statement sent to the conn.fetch() method.
 	"""
-        self.fetch_calls.append({'statement': statement, '*args': args})
-        return [{'id': v} for v in range(10)]
+        self.fetch_calls.append({"statement": statement, "*args": args})
+        return [{"id": v} for v in range(10)]
 
 
 @pytest.fixture
 async def app_client(aiohttp_client, m_pg):
     from bhus import factory
+
     client = await aiohttp_client(factory.make_app)
     return client
 
@@ -53,7 +53,7 @@ async def app_client(aiohttp_client, m_pg):
 @pytest.fixture
 async def m_pg(monkeypatch):
     fake_pool = make_mocked_coro(FakePool())
-    monkeypatch.setattr(asyncpg, 'create_pool', fake_pool)
+    monkeypatch.setattr(asyncpg, "create_pool", fake_pool)
     return fake_pool
 
 
@@ -61,14 +61,17 @@ async def m_pg(monkeypatch):
 def operators():
     operators = []
     for _ in range(10):
-        id_ = ''.join(choice(string.ascii_uppercase) for _ in range(2))
-        operators.append({'operator': id_})
+        id_ = "".join(choice(string.ascii_uppercase) for _ in range(2))
+        operators.append({"operator": id_})
     return operators
 
 
 @pytest.fixture
 async def m_operators_by_time_range(monkeypatch, operators):
     from bhus import domain
+
     m_operators_by_time_range = make_mocked_coro(operators)
-    monkeypatch.setattr(domain, 'get_operators_by_time_range', m_operators_by_time_range)
+    monkeypatch.setattr(
+        domain, "get_operators_by_time_range", m_operators_by_time_range
+    )
     return m_operators_by_time_range

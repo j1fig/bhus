@@ -13,4 +13,4 @@ class Operator(NamedTuple):
     id: str
 
     def to_dict(self):
-        return {'id': self.id}
+        return {"id": self.id}
