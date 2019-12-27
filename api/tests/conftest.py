@@ -11,6 +11,7 @@ from bhus.spec import Operator, Vehicle, VehicleState
 
 
 _TIME = time()
+_id = 0
 
 
 class FakePool:
@@ -43,18 +44,7 @@ class FakeConnection:
 	Echoes the statement sent to the conn.fetch() method.
 	"""
         self.fetch_calls.append({"statement": statement, "*args": args})
-        return [
-            FakeRecord(field_values={
-                "id": v,
-                "timestamp": _gen_timestamp(),
-                "operator_id": _gen_operator_id(),
-                "vehicle_id": _gen_vehicle_id(),
-                "latitude": _gen_latitude(),
-                "longitude": _gen_longitude(),
-                "at_stop": _gen_at_stop(),
-            })
-            for v in range(10)
-        ]
+        return [_gen_record() for v in range(10)]
 
 
 class FakeRecord:
@@ -64,6 +54,28 @@ class FakeRecord:
 
     def __getitem__(self, key):
         return self._field_values[key]
+
+
+def _gen_record():
+    return FakeRecord(field_values={
+        "id": _gen_id(),
+        "timestamp": _gen_timestamp(),
+        "operator_id": _gen_operator_id(),
+        "vehicle_id": _gen_vehicle_id(),
+        "latitude": _gen_latitude(),
+        "longitude": _gen_longitude(),
+        "at_stop": _gen_at_stop(),
+    })
+
+
+def _gen_id():
+    """
+    Non-thread safe, though we don't care much for colliding id's at this point, nor
+    do we run test code in multiple threads.
+    """
+    global _id
+    _id += 1
+    return _id
 
 
 def _gen_timestamp():
@@ -106,34 +118,30 @@ async def m_pg(monkeypatch):
 
 
 @pytest.fixture
+def records():
+    return [_gen_record() for _ in range(10)]
+
+
+@pytest.fixture
 def operators():
-    operators = []
-    for _ in range(10):
-        operators.append(Operator(id=_gen_operator_id()))
-    return operators
+    return [Operator(id=_gen_operator_id()) for _ in range(10)]
 
 
 @pytest.fixture
 def vehicles():
-    vehicles = []
-    for _ in range(10):
-        vehicles.append(Vehicle(id=_gen_operator_id()))
-    return vehicles 
+    return [Vehicle(id=_gen_operator_id()) for _ in range(10)]
 
 
 @pytest.fixture
 def vehicle_states():
-    states = []
-    for _ in range(10):
-        states.append(
-            VehicleState(
-                timestamp=_gen_timestamp(),
-                latitude=_gen_latitude(),
-                longitude=_gen_longitude(),
-                at_stop=_gen_at_stop(),
-            )
-        )
-    return states 
+    return [
+        VehicleState(
+            timestamp=_gen_timestamp(),
+            latitude=_gen_latitude(),
+            longitude=_gen_longitude(),
+            at_stop=_gen_at_stop(),
+        ) for _ in range(10)
+    ]
 
 
 @pytest.fixture
@@ -145,3 +153,25 @@ async def m_operators_by_time_range(monkeypatch, operators):
         domain, "get_unique_operators_by_time_range", m_operators_by_time_range
     )
     return m_operators_by_time_range
+
+
+@pytest.fixture
+async def m_select_distinct_vehicles_by_operator_and_time_range(monkeypatch, operators):
+    from bhus.models import pg
+
+    m_records = make_mocked_coro(records)
+    monkeypatch.setattr(
+        pg, "select_distinct_vehicles_by_operator_and_time_range", m_records
+    )
+    return m_records
+
+
+@pytest.fixture
+async def m_select_distinct_vehicles_by_operator_at_stop_and_time_range(monkeypatch, operators):
+    from bhus.models import pg
+
+    m_records = make_mocked_coro(records)
+    monkeypatch.setattr(
+        pg, "select_distinct_vehicles_by_operator_at_stop_and_time_range", m_records
+    )
+    return m_records

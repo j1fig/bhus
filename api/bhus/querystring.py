@@ -3,6 +3,18 @@ from typing import Optional
 from aiohttp import web
 
 
+_ACCEPTABLE_BOOL_VALUES = {
+    True: (
+        '1',
+        'true',
+    ),
+    False: (
+        '0',
+        'false',
+    ),
+}
+
+
 def get_time_range_from_request(request: web.Request) -> (int, int):
     q = request.query
     # Right now both from/to are required parameters.
@@ -25,9 +37,12 @@ def get_at_stop_from_request(request: web.Request) -> Optional[bool]:
     if "at_stop" not in q:
         return None
 
-    try:
-        at_stop = bool(q["at_stop"])
-    except TypeError:
+    v = q["at_stop"]
+    if v in _ACCEPTABLE_BOOL_VALUES[True]:
+        at_stop = True
+    elif v in _ACCEPTABLE_BOOL_VALUES[False]:
+        at_stop = False
+    else:
         raise web.HTTPBadRequest
 
     return at_stop

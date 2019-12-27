@@ -41,7 +41,7 @@ async def operator_vehicles(request: web.Request) -> web.Response:
     """
     from_, to = querystring.get_time_range_from_request(request)
     at_stop = querystring.get_at_stop_from_request(request)
-    operator_id = urlmatch.get_id_from_request('operator_id', request)
+    operator_id = urlmatch.get_id_from_request('operator_id', request, str)
     vehicles = await domain.get_unique_vehicles_by_operator_and_time_range(
         pool=request.app["pool"], operator_id=operator_id, from_=from_, to=to, at_stop=at_stop
     )
@@ -56,7 +56,7 @@ async def vehicles(request: web.Request) -> web.Response:
     TODO proper view level documentation.
     """
     from_, to = querystring.get_time_range_from_request(request)
-    vehicle_id = urlmatch.get_id_from_request('vehicle_id', request)
+    vehicle_id = urlmatch.get_id_from_request('vehicle_id', request, int)
     vehicle_states = await domain.get_vehicle_states_by_vehicle_and_time_range(
         pool=request.app["pool"], vehicle_id=vehicle_id, from_=from_, to=to
     )
