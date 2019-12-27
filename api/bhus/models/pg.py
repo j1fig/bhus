@@ -27,13 +27,21 @@ async def get_operators_by_time_range(pool: Pool, from_: int, to: int) -> List[R
         )
 
 
-async def get_vehicles_by_time_range(pool: Pool, from_: int, to: int) -> List[Record]:
-    pass
-
-
 async def get_vehicles_by_operator_and_time_range(pool: Pool, operator_id: str, from_: int, to: int) -> List[Record]:
-    pass
+    async with pool.acquire() as conn:
+        return await conn.fetch(
+            "SELECT DISTINCT(vehicle_id) FROM vehicle_state WHERE operator = $1 AND timestamp >= $2 AND timestamp <= $3",
+            operator_id,
+            from_,
+            to
+        )
 
 
 async def get_vehicle_by_time_range(pool: Pool, operator_id: str, from_: int, to: int) -> List[Record]:
-    pass
+    async with pool.acquire() as conn:
+        return await conn.fetch(
+            "SELECT timestamp, latitude, longitude, at_stop FROM vehicle_state WHERE operator = $1 AND timestamp >= $2 AND timestamp <= $3",
+            operator_id,
+            from_,
+            to
+        )

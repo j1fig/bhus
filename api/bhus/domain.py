@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 # Yes, `models` are a leaky abstraction because of PG-specific types leaking
 # all the way up to the views in this case.
@@ -15,15 +15,15 @@ async def get_operators_by_time_range(pool: Pool, from_: int, to: int) -> List[O
     return [dict(r) for r in records]
 
 
-async def get_vehicles_by_time_range(pool: Pool, from_: int, to: int) -> List[Vehicle]:
-    return await pg.get_vehicles_by_time_range(pool=pool, from_=from_, to=to)
+async def get_vehicles_by_operator_and_time_range(pool: Pool, operator_id: str, from_: int, to: int, at_stop: Optional[bool] = None) -> List[Vehicle]:
+    if at_stop is not None:
+        records = await pg.get_vehicles_by_operator_and_time_range(pool=pool, from_=from_, to=to, at_stop=at_stop)
+    else:
+        records = await pg.get_vehicles_by_operator_and_time_range(pool=pool, from_=from_, to=to)
+    return [dict(r) for r in records]
 
 
-async def get_vehicles_by_operator_and_time_range(pool: Pool, operator_id: str, from_: int, to: int) -> List[Vehicle]:
-    return await pg.get_vehicles_by_operator_and_time_range(pool=pool, from_=from_, to=to)
-
-
-# TODO I think this is a differnt endpoint and resource... like /api/vehcle/{id}/state and returns a list of VehicleState's
+# TODO I think this is a different endpoint and resource... like /api/vehicle/{id}/state and returns a list of VehicleState's
 # which actually contain the lat/lon, at_stop, etc.
 async def get_vehicle_by_time_range(pool: Pool, operator_id: str, from_: int, to: int) -> List[Vehicle]:
     return await pg.get_vehicle_by_time_range(pool=pool, from_=from_, to=to)
