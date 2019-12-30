@@ -23,9 +23,9 @@ class VehicleState extends Simulation {
     setUp(
       scn.inject(
         nothingFor(5 seconds),
-        rampUsersPerSec(1) to(600) during(3 minutes),
-        constantUsersPerSec(600) during(2 minutes),
-        rampUsersPerSec(600) to(1) during(3 minutes),
+        rampUsersPerSec(1) to(100) during(3 minutes),
+        constantUsersPerSec(100) during(2 minutes),
+        rampUsersPerSec(100) to(1) during(3 minutes),
         nothingFor(5 seconds)
       )
     ).protocols(httpProtocol)

@@ -42,6 +42,22 @@ services:
       POSTGRES_DB: "${DBNAME}"
       POSTGRES_PASSWORD: "${DBPASSWORD}"
       POSTGRES_USER: "${DBUSER}"
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 2048M
+        reservations:
+          cpus: '2.0'
+          memory: 1024M
+
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
 
 volumes:
   database:

@@ -12,7 +12,10 @@ def init_app(app: Application):
 async def init(app: Application, retries: int = 10, retry_period=2.0):
     while retries > 0:
         try:
-            app["pool"] = await asyncpg.create_pool(dsn=app["config"]["db_dsn"])
+            app["pool"] = await asyncpg.create_pool(
+                dsn=app["config"]["db_dsn"],
+                min_size=40, max_size=100,
+            )
             return
         except OSError:
             # TODO log warning here.
