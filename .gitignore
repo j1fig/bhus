@@ -1,4 +1,7 @@
+*.DS_Store
 *.venv/
 *.pyc
 *.terraform/
 *.tox/
+*.json
+benchmark/results/

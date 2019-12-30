@@ -1,0 +1,155 @@
+#!/usr/bin/env python3
+"""
+Generates JSON arrays to serve as a Gatling JSONFeeder for bhus benchmarking.
+
+This script outputs a JSON array with each row to be deserialized by Gatling.
+Gatling loads this file, deserializes it into memory (so output size is important)
+and randomly pick one entry to serve as the payload to send for a given User.
+
+This output also determines the distribution of valid/invalid payloads,
+since we prefer to use Python to determine that.
+
+Recommendations:
+    * don't try to generate more than 200k unique payloads, lest your machine have more than 16GB of RAM.
+"""
+from enum import Enum
+from time import time
+from typing import Tuple
+import argparse
+import csv
+import multiprocessing
+import json
+import random
+
+
+# for populations higher than this the script will make use of all available CPU cores.
+_CROWDED = 5000
+
+# Dublin bus data time window to hit.
+_MIN_TIMESTAMP = 1352160000
+_MAX_TIMESTAMP = 1352246396
+
+_OPERATORS = (
+    'D1',
+    'D2',
+    'CF',
+    'CD',
+    'PO',
+    'RD',
+    'SL',
+    'HN',
+)
+
+_VEHICLE_IDS = None
+
+
+class Endpoint(Enum):
+
+    operators = 0
+    operator_vehicles = 1
+    vehicle_state = 2
+
+    def __str__(self):
+        return self.name
+
+    @staticmethod
+    def from_string(s):
+        try:
+            return Endpoint[s]
+        except KeyError:
+            raise ValueError('invalid endpoint')
+
+
+def _gen_timestamp(start=None):
+    """
+    Returns a random Unix timestamp in the Dublin bus data time window.
+    """
+    return random.randint(
+        start if start is not None else _MIN_TIMESTAMP,
+        _MAX_TIMESTAMP
+    )
+
+
+def _gen_operator_id():
+    return random.choice(_OPERATORS)
+
+
+def _gen_vehicle_id():
+    global _VEHICLE_IDS
+    if _VEHICLE_IDS is None:
+        with open('vid.csv', 'r') as f:
+            reader = csv.reader(f)
+            _VEHICLE_IDS = [int(r[0]) for r in reader]
+    return random.choice(_VEHICLE_IDS)
+
+
+def _gen_at_stop():
+    return random.choice([True, False])
+
+
+def _gen_has_at_stop(p=0.5):
+    return random.random() < p
+
+
+def _gen(pop: tuple, query_string: tuple, url_param: tuple = None):
+    payloads = []
+    for _ in range(pop):
+        p = dict()
+        p["from"] = _gen_timestamp()
+        p["to"] = _gen_timestamp(start=p["from"])
+        if "at_stop" in query_string:
+            p["at_stop"] = _gen_at_stop()
+        if "operator_id" in url_param:
+            p["operator_id"] = _gen_operator_id()
+        if "vehicle_id" in url_param:
+            p["vehicle_id"] = _gen_vehicle_id()
+
+        payloads.append(p)
+
+    return payloads
+
+
+def _get_args_by_endpoint(endpoint: Endpoint) -> Tuple[set, set]:
+    qs = set()
+    url_params = set()
+    qs.add('from')
+    qs.add('to')
+
+    if endpoint == Endpoint.operator_vehicles:
+        qs.add('at_stop')
+        url_params.add('operator_id')
+    elif endpoint == Endpoint.vehicle_state:
+        url_params.add('vehicle_id')
+
+    return qs, url_params
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='A request generator for bhus Gatling benchmarks.')
+    parser.add_argument("endpoint", help="endpoint to generate requests for.", type=Endpoint.from_string, choices=list(Endpoint))
+    parser.add_argument("population", help="number of requests to generate.", type=int)
+    parser.add_argument(
+        "-f", "--file", help="output to a file.", default="requests.json"
+    )
+    args = parser.parse_args()
+
+    endpoint = args.endpoint
+    pop = args.population
+
+    qs, url_params = _get_args_by_endpoint(endpoint)
+
+    if pop < _CROWDED:
+        payloads = _gen(pop, qs, url_params)
+    else:
+        processes = multiprocessing.cpu_count()
+        with multiprocessing.Pool(processes=processes) as pool:
+            sub_pop = int(pop / processes)
+            results = [
+                pool.apply_async(_gen, (sub_pop, qs, url_params))
+                for _ in range(processes)
+            ]
+            payloads = [p for r in results for p in r.get()]
+    output = json.dumps(payloads)
+
+    with open(args.file, "w") as f:
+        f.write(output)
