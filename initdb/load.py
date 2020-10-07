@@ -6,6 +6,7 @@ from models import VehicleState
 from utils import eprint
 import db
 import dataset
+import es
 
 
 SAMPLE_FILENAME = 'siri.20121106.csv'
@@ -63,6 +64,7 @@ def from_csv(filepath):
                 states.append(vehicle_state)
             session.bulk_insert_mappings(VehicleState, states)
             session.commit()
+            es.bulk_insert(states)
 
 
 def _coerce_at_stop(at_stop):
@@ -96,5 +98,6 @@ def _wc_l(f):
 def _is_loaded(filename):
     expected_rows = _wc_l(filename)
     session = db.make_session()
-    rows = session.query(VehicleState).filter_by(source=filename).count()
-    return rows == expected_rows
+    pg_count = session.query(VehicleState).filter_by(source=filename).count()
+    es_count = es.count()
+    return pg_rows == es_count == expected_rows

@@ -8,7 +8,7 @@ import load
 if __name__ == '__main__':
     eprint('ensuring dataset is downloaded...')
     dataset.ensure()
-    eprint('maybe create tables...')
+    eprint('maybe create PostgreSQL tables...')
     db.create_all()
     eprint('maybe load the dataset...')
     load.one()

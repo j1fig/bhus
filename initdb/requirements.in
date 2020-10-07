@@ -1,4 +1,5 @@
 SQLAlchemy
 alembic
+elasticsearch
 requests
 psycopg2-binary
