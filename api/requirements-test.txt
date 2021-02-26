@@ -4,24 +4,51 @@
 #
 #    pip-compile requirements-test.in
 #
-aiohttp==3.6.2            # via pytest-aiohttp
-async-timeout==3.0.1      # via aiohttp
-attrs==19.3.0             # via aiohttp, pytest
-chardet==3.0.4            # via aiohttp
-coverage==5.0             # via pytest-cov
-idna==2.8                 # via yarl
-importlib-metadata==1.3.0  # via pluggy, pytest
-more-itertools==8.0.2     # via pytest, zipp
-multidict==4.7.1          # via aiohttp, yarl
-packaging==19.2           # via pytest
-pluggy==0.13.1            # via pytest
-py==1.8.0                 # via pytest
-pyparsing==2.4.5          # via packaging
+aiohttp==3.7.4
+    # via pytest-aiohttp
+async-timeout==3.0.1
+    # via aiohttp
+attrs==19.3.0
+    # via
+    #   aiohttp
+    #   pytest
+chardet==3.0.4
+    # via aiohttp
+coverage==5.0
+    # via pytest-cov
+idna==2.8
+    # via yarl
+more-itertools==8.0.2
+    # via pytest
+multidict==4.7.1
+    # via
+    #   aiohttp
+    #   yarl
+packaging==19.2
+    # via pytest
+pluggy==0.13.1
+    # via pytest
+py==1.8.0
+    # via pytest
+pyparsing==2.4.5
+    # via packaging
 pytest-aiohttp==0.3.0
+    # via -r requirements-test.in
 pytest-cov==2.8.1
+    # via -r requirements-test.in
 pytest-mock==1.13.0
+    # via -r requirements-test.in
 pytest==5.3.2
-six==1.13.0               # via packaging
-wcwidth==0.1.7            # via pytest
-yarl==1.4.2               # via aiohttp
-zipp==0.6.0               # via importlib-metadata
+    # via
+    #   -r requirements-test.in
+    #   pytest-aiohttp
+    #   pytest-cov
+    #   pytest-mock
+six==1.13.0
+    # via packaging
+typing-extensions==3.7.4.3
+    # via aiohttp
+wcwidth==0.1.7
+    # via pytest
+yarl==1.4.2
+    # via aiohttp
