@@ -5,17 +5,36 @@
 #    pip-compile requirements.in
 #
 aiohttp-swagger[performance]==1.0.14
+    # via -r requirements.in
 aiohttp==3.6.2
-async-timeout==3.0.1      # via aiohttp
+    # via
+    #   -r requirements.in
+    #   aiohttp-swagger
+async-timeout==3.0.1
+    # via aiohttp
 asyncpg==0.20.0
-attrs==19.3.0             # via aiohttp
+    # via -r requirements.in
+attrs==19.3.0
+    # via aiohttp
 cchardet==2.1.5
-chardet==3.0.4            # via aiohttp
-idna==2.8                 # via yarl
-jinja2==2.10.3            # via aiohttp-swagger
-markupsafe==1.1.1         # via jinja2
-multidict==4.7.1          # via aiohttp, yarl
-pyyaml==5.2               # via aiohttp-swagger
-ujson==1.35               # via aiohttp-swagger
+    # via -r requirements.in
+chardet==3.0.4
+    # via aiohttp
+idna==2.8
+    # via yarl
+jinja2==2.10.3
+    # via aiohttp-swagger
+markupsafe==1.1.1
+    # via jinja2
+multidict==4.7.1
+    # via
+    #   aiohttp
+    #   yarl
+pyyaml==5.4
+    # via aiohttp-swagger
+ujson==1.35
+    # via aiohttp-swagger
 uvloop==0.14.0
-yarl==1.4.2               # via aiohttp
+    # via -r requirements.in
+yarl==1.4.2
+    # via aiohttp
